@@ -5,8 +5,7 @@ from tkinter import colorchooser
 import openpyxl
 import pandas as pd
 import os
-def print_info():
-    print(rgb_to_hex((255, 255, 195)))
+from tkinter import filedialog
     
 def find_color():
     color_name = combo.get()
@@ -58,10 +57,12 @@ def save_palette():
         print(palette)
     with open(output_file, 'w') as f:
         f.write('\n'.join(palette))
-    
+    file_path = filedialog.asksaveasfilename(defaultextension='.ACO',
+        initialfile='mypalette.ACO',
+        filetypes=(('ACO files', '*.ACO'), ('All files', '*.*')))
     
     print(f'Палитра успешно сохранена в файл: {output_file}')
-    os.system(f"swatch generate  -i {output_file} -o mypallete3.aco")
+    os.system(f"swatch generate  -i {output_file} -o {file_path}")
 # Инициализация окна
 root = tk.Tk()
 root.title('Поиск и сохранение цветов')
@@ -82,9 +83,6 @@ find_button.grid(row=0, column=2, padx=10)
 
 colors_listbox = tk.Listbox(root, width=40)
 colors_listbox.pack(pady=10)
-
-print_button = tk.Button(frame, text='print', command=print_info)
-print_button.grid(row=1, column=2, padx=10)
 
 save_frame = tk.Frame(root)
 save_frame.pack()
