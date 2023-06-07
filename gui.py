@@ -4,7 +4,10 @@ from tkinter import ttk
 from tkinter import colorchooser
 import openpyxl
 import pandas as pd
-
+import os
+def print_info():
+    print(rgb_to_hex((255, 255, 195)))
+    
 def find_color():
     color_name = combo.get()
     color_code = find_color_code(color_name)
@@ -20,15 +23,22 @@ def find_color_code(color_name):
     
     for row in worksheet.iter_rows(values_only=True):
         if row[0] == color_name:
-            return row[1:4]  # Возвращаем код цвета
+            new_format = []
+            for _ in list(row[1:4]):
+                new_format.append(round(_))
+                print(new_format)
+            return rgb_to_hex(tuple(new_format))  # Возвращаем код цвета
 
     return None  # Если цвет не найден
 
 def update_saved_colors():
     colors_listbox.delete(0, tk.END)
     for color in saved_colors:
-        colors_listbox.insert(tk.END, f'{color[0]}: {color[1]}')
-
+        colors_listbox.insert(tk.END, fr'{color[0]}: {color[1]}')
+def rgb_to_hex(rgb):
+    #return '%02x%02x%02x' % rgb
+    hex_value = "{:02X}{:02X}{:02X}".format(rgb[0], rgb[1], rgb[2])
+    return hex_value
 def save_palette():
     if len(saved_colors) == 0:
         return
@@ -36,25 +46,22 @@ def save_palette():
     # Создаем DataFrame для палитры
     df = pd.DataFrame(saved_colors, columns=['Название цвета', 'Код цвета'])
     
-    # Выберите формат палитры: .act или .aco
-    file_type = file_type_var.get()
-    if file_type == 'ACT':
-        output_file = 'C:/Users/admin/Desktop/saved_palette.act'
-        df.to_csv(output_file, sep='\t', index=False, header=False)
-    elif file_type == 'ACO':
-        output_file = 'C:/Users/admin/Desktop/saved_palette.aco'
-        palette = []
-        for _, row in df.iterrows():
-            color_name = str(row['Название цвета'])
-            color_code = str(row['Код цвета'])
-            palette.append(f'{color_name}\t{color_code}')
-        with open(output_file, 'w') as f:
-            f.write('\n'.join(palette))
-    else:
-        return
+    output_file = 'C:/Users/admin/Desktop/saved_palette.csv'
+    palette = []
+    
+    palette.append('name,space_id,color')
+    for _, row in df.iterrows():
+        color_name = row['Название цвета']
+        color_code = '#' + row['Код цвета']
+        new_string = color_name + ', 0, ' + color_code
+        palette.append(new_string)
+        print(palette)
+    with open(output_file, 'w') as f:
+        f.write('\n'.join(palette))
+    
     
     print(f'Палитра успешно сохранена в файл: {output_file}')
-
+    os.system(f"swatch generate  -i {output_file} -o mypallete3.aco")
 # Инициализация окна
 root = tk.Tk()
 root.title('Поиск и сохранение цветов')
@@ -76,19 +83,18 @@ find_button.grid(row=0, column=2, padx=10)
 colors_listbox = tk.Listbox(root, width=40)
 colors_listbox.pack(pady=10)
 
+print_button = tk.Button(frame, text='print', command=print_info)
+print_button.grid(row=1, column=2, padx=10)
+
 save_frame = tk.Frame(root)
 save_frame.pack()
 
-file_type_var = tk.StringVar(value='ACO')  # Значение по умолчанию для выбора типа файла
 
-act_radio = tk.Radiobutton(save_frame, text='.ACT', variable=file_type_var, value='ACT')
-act_radio.grid(row=0, column=0, padx=5)
-
-aco_radio = tk.Radiobutton(save_frame, text='.ACO', variable=file_type_var, value='ACO')
-aco_radio.grid(row=0, column=1, padx=5)
 
 save_button = tk.Button(root, height=25, text='Сохранить палитру', command=save_palette)
 save_button.pack(pady=10)
+
+
 
 # Список сохраненных цветов
 saved_colors = []
