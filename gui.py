@@ -6,7 +6,8 @@ import openpyxl
 import pandas as pd
 import os
 from tkinter import filedialog
-    
+# Список сохраненных цветов
+saved_colors = []
 def find_color():
     color_name = combo.get()
     color_code = find_color_code(color_name)
@@ -23,7 +24,7 @@ def find_color_code(color_name):
     
     for row in worksheet.iter_rows(values_only=True):
         if row[0] == color_name or f'{row[0]}\n' == color_name:
-            
+                    
             print("saved_colors: ", saved_colors)
             print('row[0]: ', row[0])
             new_format = []
@@ -34,11 +35,12 @@ def find_color_code(color_name):
     return None  # Если цвет не найден
 
 def update_saved_colors():
-    
+    saved_colors_new = list(set(saved_colors))
     colors_listbox.delete(0, tk.END)
-    for color in saved_colors:
+
+    for color in saved_colors_new:
         colors_listbox.insert(tk.END, fr'{color[0]}: {color[1]}')
-    
+   
     
 def rgb_to_hex(rgb):
     
@@ -108,8 +110,7 @@ save_button.pack(pady=10)
 
 
 
-# Список сохраненных цветов
-saved_colors = []
+
 
 root.mainloop()
 
