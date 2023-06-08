@@ -6,15 +6,24 @@ import openpyxl
 import pandas as pd
 import os
 from tkinter import filedialog
+from tkinter.colorchooser import askcolor
 # Список сохраненных цветов
+
 saved_colors = []
+def change_color():
+    colors = askcolor(title="Tkinter Color Chooser")
+    #root.configure(bg=colors[1])
+    
+    saved_colors.append((len(set(saved_colors)) + 1, colors[1]))
+    
+    update_saved_colors()
 def find_color():
     color_name = combo.get()
     color_code = find_color_code(color_name)
     
     if color_code is not None:
         
-        saved_colors.append((color_name, color_code))
+        saved_colors.append((len(set(saved_colors)) + 1, color_code))
         update_saved_colors()
         
 
@@ -24,7 +33,7 @@ def find_color_code(color_name):
     
     for row in worksheet.iter_rows(values_only=True):
         if row[0] == color_name or f'{row[0]}\n' == color_name:
-                    
+                   
             print("saved_colors: ", saved_colors)
             print('row[0]: ', row[0])
             new_format = []
@@ -36,11 +45,16 @@ def find_color_code(color_name):
 
 def update_saved_colors():
     saved_colors_new = list(set(saved_colors))
+    print(saved_colors_new)
+    saved_colors_new.sort()
     colors_listbox.delete(0, tk.END)
 
     for color in saved_colors_new:
-        colors_listbox.insert(tk.END, fr'{color[0]}: {color[1]}')
-   
+        colors_listbox.insert(tk.END, f'{color[0]}: {color[1]}')
+        
+        print("saved_colors: ",saved_colors_new)
+        
+        
     
 def rgb_to_hex(rgb):
     
@@ -54,13 +68,13 @@ def save_palette():
     df = pd.DataFrame(saved_colors, columns=['Название цвета', 'Код цвета'])
     
     output_file = 'C:/Users/admin/Desktop/saved_palette.csv'
-    palette = []
     
+    palette = []
     palette.append('name,space_id,color')
     for _, row in df.iterrows():
         color_name = row['Название цвета']
         color_code = '#' + row['Код цвета']
-        new_string = color_name + ', 0, ' + color_code
+        new_string = str(color_name) + ', 0, ' + color_code
         palette.append(new_string)
         print(palette)
     with open(output_file, 'w') as f:
@@ -74,7 +88,13 @@ def save_palette():
 def delete_selected_item():
     selected_index = colors_listbox.curselection()
     if selected_index:
+        print(saved_colors)
         colors_listbox.delete(selected_index)
+        print((selected_index))
+        print((selected_index[0]))
+        saved_colors.remove(saved_colors[selected_index[0]])
+        print(saved_colors)
+       
 # Инициализация окна
 root = tk.Tk()
 root.title('Поиск и сохранение цветов')
@@ -95,6 +115,8 @@ find_button.grid(row=0, column=2, padx=10)
 
 delete_button = tk.Button(frame, text="Удалить", command=delete_selected_item)
 delete_button.grid(row=1, column=2, padx=10)
+
+ttk.Button(root, text='Select a Color', command=change_color).pack(expand=True)
 
 colors_listbox = tk.Listbox(root, width=40)
 colors_listbox.pack(padx=10)
