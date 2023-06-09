@@ -1,5 +1,6 @@
 #swatch generate  -i rgb.csv -o mypallete.aco
 import tkinter as tk
+import customtkinter
 from tkinter import ttk
 from tkinter import colorchooser
 import openpyxl
@@ -7,12 +8,14 @@ import pandas as pd
 import os
 from tkinter import filedialog
 from tkinter.colorchooser import askcolor
-# Список сохраненных цветов
+from customtkinter import set_default_color_theme
 
+
+# Список сохраненных цветов
 saved_colors = []
 def change_color():
     colors = askcolor(title="Tkinter Color Chooser")
-    #root.configure(bg=colors[1])
+    
     
     saved_colors.append((len(set(saved_colors)) + 1, colors[1]))
     
@@ -45,6 +48,13 @@ def find_color_code(color_name):
 
 def update_saved_colors():
     saved_colors_new = list(set(saved_colors))
+    
+    temp = [] 
+    for x in saved_colors_new:
+        if x[1] not in temp:
+            print("x: ", x[1])
+            temp.append(x)
+    saved_colors_new = temp
     print(saved_colors_new)
     saved_colors_new.sort()
     colors_listbox.delete(0, tk.END)
@@ -52,7 +62,7 @@ def update_saved_colors():
     for color in saved_colors_new:
         colors_listbox.insert(tk.END, f'{color[0]}: {color[1]}')
         
-        print("saved_colors: ",saved_colors_new)
+        print("saved_colors_new: ",saved_colors_new)
         
         
     
@@ -96,43 +106,49 @@ def delete_selected_item():
         print(saved_colors)
        
 # Инициализация окна
-root = tk.Tk()
-root.title('Поиск и сохранение цветов')
-root.geometry('400x400')
 
+
+
+app = customtkinter.CTk()
+app.geometry("600x500")
+app.title("Поиск и сохранение цветов")
+
+
+
+
+customtkinter.set_appearance_mode("dark")
 # Создание и расположение элементов
-frame = tk.Frame(root)
-frame.pack(pady=20)
 
-label = tk.Label(frame, text='Выберите цвет:')
-label.grid(row=0, column=0, padx=10)
 
-combo = ttk.Entry(frame, width=20)
-combo.grid(row=0, column=1, padx=10)
+label = customtkinter.CTkLabel(app, text='Выберите цвет:')
+label.pack(pady=20, padx=60)
 
-find_button = tk.Button(frame, text='Найти', command=find_color)
-find_button.grid(row=0, column=2, padx=10)
+combo = customtkinter.CTkEntry(app, width=150)
+combo.pack(pady=20, padx=60)
 
-delete_button = tk.Button(frame, text="Удалить", command=delete_selected_item)
-delete_button.grid(row=1, column=2, padx=10)
+find_button = customtkinter.CTkButton(app, text='Найти в таблице', command=find_color)
+find_button.pack(pady=20, padx=60)
 
-ttk.Button(root, text='Select a Color', command=change_color).pack(expand=True)
+delete_button = customtkinter.CTkButton(app, text="Удалить", command=delete_selected_item)
+delete_button.pack(pady=20, padx=60)
 
-colors_listbox = tk.Listbox(root, width=40)
+customtkinter.CTkButton(app, text='Выбрать цвет вручную', command=change_color).pack(expand=True)
+
+colors_listbox = tk.Listbox(app, width=40)
 colors_listbox.pack(padx=10)
 
-save_frame = tk.Frame(root)
+save_frame = tk.Frame(app)
 save_frame.pack()
 
 
 
-save_button = tk.Button(root, text='Сохранить палитру', command=save_palette)
+save_button = customtkinter.CTkButton(app, text='Сохранить палитру', command=save_palette)
 save_button.pack(pady=10)
 
 
 
 
 
-
-root.mainloop()
+app.configure(bg='blue')
+app.mainloop()
 
