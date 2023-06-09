@@ -8,7 +8,7 @@ import pandas as pd
 import os
 from tkinter import filedialog
 from tkinter.colorchooser import askcolor
-from customtkinter import set_default_color_theme
+
 
 
 # Список сохраненных цветов
@@ -110,7 +110,7 @@ def delete_selected_item():
 
 
 app = customtkinter.CTk()
-app.geometry("600x500")
+app.geometry("600x600")
 app.title("Поиск и сохранение цветов")
 
 
@@ -121,20 +121,21 @@ customtkinter.set_appearance_mode("dark")
 
 
 label = customtkinter.CTkLabel(app, text='Выберите цвет:')
-label.pack(pady=20, padx=60)
+label.pack(pady=20, padx=10)
 
 combo = customtkinter.CTkEntry(app, width=150)
-combo.pack(pady=20, padx=60)
+combo.pack(pady=20, padx=10)
 
 find_button = customtkinter.CTkButton(app, text='Найти в таблице', command=find_color)
-find_button.pack(pady=20, padx=60)
+find_button.pack(pady=20, padx=10)
 
 delete_button = customtkinter.CTkButton(app, text="Удалить", command=delete_selected_item)
-delete_button.pack(pady=20, padx=60)
+delete_button.pack(pady=20, padx=10)
 
-customtkinter.CTkButton(app, text='Выбрать цвет вручную', command=change_color).pack(expand=True)
+select_button = customtkinter.CTkButton(app, text='Выбрать цвет вручную', command=change_color)
+select_button.pack(pady=20, padx=10)
 
-colors_listbox = tk.Listbox(app, width=40)
+colors_listbox = tk.Listbox(app, width=40, font=20)
 colors_listbox.pack(padx=10)
 
 save_frame = tk.Frame(app)
